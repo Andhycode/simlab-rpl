@@ -17,9 +17,28 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // User::factory()->create([
+        //     'name' => 'Test User',
+        //     'email' => 'test@example.com',
+        // ]);
+        Kategori::create([
+            'nama_kategori' => 'Komputer & Laptop',
+            'deskripsi' => 'Perangkat komputer dan laptop untuk praktik.',
+        ]);
+
+        Kategori::create([
+            'nama_kategori' => 'Perangkat Jaringan',
+            'deskripsi' => 'Perangkat yang digunakan untuk praktik jaringan.',
+        ]);
+
+        Kategori::create([
+            'nama_kategori' => 'Alat Perkabelan',
+            'deskripsi' => 'Alat dan perlengkapan untuk membuat kabel jaringan.',
+        ]);
+
+        Kategori::create([
+            'nama_kategori' => 'Multimedia',
+            'deskripsi' => 'Perangkat multimedia untuk kegiatan praktik.',
         ]);
     }
 }
