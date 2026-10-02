@@ -9,74 +9,89 @@ use App\Models\Kategori;
 class BarangController extends Controller
 {
 
-    public function dashboard()
-    {
-        //
-    }
+  public function dashboard()
+  {
+    $totalAset = Barang::count();
+    $unitTersedia = Barang::where('status', 'Tersedia')->sum('stok');
+    $unitDipinjamMaintenance = Barang::whereIn('status', [
+      'Dipinjam',
+      'Maintenance'
+    ])->sum('stok');
 
-    public function index()
-    {
-        
-        $barangs = Barang::with('kategori')->get();
+    return view('dashboard', compact(
+      'totalAset',
+      'unitTersedia',
+      'unitDipinjamMaintenance'
+    ));
+  }
 
-        return view('barang.index', compact('barangs'));
-    }
+  public function index()
+  {
 
-    public function create()
-    {
-    
-        $kategoris = Kategori::all();
+    $barangs = Barang::with('kategori')->get();
 
-        return view('barang.create', compact('kategoris'));
-    }
+    return view('barang.index', compact('barangs'));
+  }
 
-    public function store(Request $request)
-    {
-        
-        $validated = $request->validate([
-            'kode_barang' => 'required|string|max:20|unique:barangs,kode_barang',
-            'nama_barang' => 'required|string|min:3|max:150',
-            'kategori_id' => 'required|exists:kategoris,id',
-            'stok' => 'required|integer|min:0',
-            'kondisi' => 'required|in:Baik,Rusak Ringan,Rusak Berat',
-            'status' => 'required|in:Tersedia,Dipinjam,Maintenance',
-            'spesifikasi' => 'nullable|string',
-        ]);
+  public function create()
+  {
 
-        Barang::create($validated);
+    $kategoris = Kategori::all();
 
-        return redirect()->route('barang.create')
-            ->with('success', 'Barang berhasil ditambahkan.');
-    }
+    return view('barang.create', compact('kategoris'));
+  }
 
-    public function edit(Barang $barang)
-    {
-        $kategoris = Kategori::all();
+  public function store(Request $request)
+  {
 
-        return view('barang.edit', compact('barang', 'kategoris'));
-    }
+    $validated = $request->validate([
+      'kode_barang' => 'required|string|max:20|unique:barangs,kode_barang',
+      'nama_barang' => 'required|string|min:3|max:150',
+      'kategori_id' => 'required|exists:kategoris,id',
+      'stok' => 'required|integer|min:0',
+      'kondisi' => 'required|in:Baik,Rusak Ringan,Rusak Berat',
+      'status' => 'required|in:Tersedia,Dipinjam,Maintenance',
+      'spesifikasi' => 'nullable|string',
+    ]);
 
-    public function update(Request $request, Barang $barang)
-    {
-        
-        $validated = $request->validate([
-            'kode_barang' => 'required|string|max:20|unique:barangs,kode_barang,' . $barang->id,
-            'nama_barang' => 'required|string|min:3|max:150',
-            'kategori_id' => 'required|exists:kategoris,id',
-            'stok' => 'required|integer|min:0',
-            'kondisi' => 'required|in:Baik,Rusak Ringan,Rusak Berat',
-            'status' => 'required|in:Tersedia,Dipinjam,Maintenance',
-            'spesifikasi' => 'nullable|string',
-        ]);
+    Barang::create($validated);
 
-        $barang->update($validated);
+    return redirect()->route('barang.create')
+      ->with('success', 'Barang berhasil ditambahkan.');
+  }
 
-        return redirect()->route('barang.index')
-            ->with('success', 'Barang berhasil diperbarui.');
-    }
+  public function edit(Barang $barang)
+  {
+    $kategoris = Kategori::all();
 
-    public function destroy(string $id)
-    {
-        //
-    }
+    return view('barang.edit', compact('barang', 'kategoris'));
+  }
+
+  public function update(Request $request, Barang $barang)
+  {
+
+    $validated = $request->validate([
+      'kode_barang' => 'required|string|max:20|unique:barangs,kode_barang,' . $barang->id,
+      'nama_barang' => 'required|string|min:3|max:150',
+      'kategori_id' => 'required|exists:kategoris,id',
+      'stok' => 'required|integer|min:0',
+      'kondisi' => 'required|in:Baik,Rusak Ringan,Rusak Berat',
+      'status' => 'required|in:Tersedia,Dipinjam,Maintenance',
+      'spesifikasi' => 'nullable|string',
+    ]);
+
+    $barang->update($validated);
+
+    return redirect()->route('barang.index')
+      ->with('success', 'Barang berhasil diperbarui.');
+  }
+
+  public function destroy(Barang $barang)
+  {
+
+    $barang->delete();
+
+    return redirect()->route('barang.index')
+      ->with('success', 'Barang berhasil dihapus.');
+  }
 }
